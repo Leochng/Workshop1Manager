@@ -37,17 +37,14 @@ export default function SignupPage() {
       return
     }
 
-    // If user is created, insert profile data
+    // If user is created, update profile data (row is created by trigger)
     const userId = data.user?.id
     if (userId) {
-      const { error: profileError } = await supabase.from('profiles').insert([
-        {
-          id: userId,
-          first_name: firstName,
-          last_name: lastName,
-          phone: phone,
-        },
-      ])
+      const { error: profileError } = await supabase.from('profiles').update({
+        first_name: firstName,
+        last_name: lastName,
+        phone: phone,
+      }).eq('id', userId)
       if (profileError) {
         setError('Sign up succeeded, but failed to save profile: ' + profileError.message)
         return
