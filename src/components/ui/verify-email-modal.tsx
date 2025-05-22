@@ -41,7 +41,7 @@ export function VerifyEmailModal({ open, email, onClose }: VerifyEmailModalProps
           onClose();
         }, 1500);
       }
-    } catch (err) {
+    } catch {
       setError("Network error");
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ export function VerifyEmailModal({ open, email, onClose }: VerifyEmailModalProps
       } else {
         setResendMessage("Verification code resent!");
       }
-    } catch (err) {
+    } catch {
       setResendMessage("Network error");
     } finally {
       setResendLoading(false);

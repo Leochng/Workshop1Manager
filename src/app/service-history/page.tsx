@@ -59,7 +59,7 @@ export default function ServiceHistoryPage() {
       setLoading(false)
     }
     fetchData()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -79,7 +79,7 @@ export default function ServiceHistoryPage() {
       setLoading(false)
     }
     fetchRecords()
-  }, [selectedVehicleId])
+  }, [selectedVehicleId, supabase])
 
   const handleAddRecord = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

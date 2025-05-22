@@ -72,7 +72,7 @@ export default function AppointmentsPage() {
       setLoading(false)
     }
     fetchData()
-  }, [])
+  }, [supabase])
 
   const handleBook = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

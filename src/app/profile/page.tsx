@@ -43,7 +43,7 @@ export default function ProfilePage() {
       setLoading(false)
     }
     fetchProfile()
-  }, [])
+  }, [supabase])
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<Record<string, any> | null>(null)
   const [vehiclesCount, setVehiclesCount] = useState(0)
-  const [nextAppointment, setNextAppointment] = useState<any>(null)
+  const [nextAppointment, setNextAppointment] = useState<Record<string, any> | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -45,7 +44,7 @@ export default function DashboardPage() {
       setLoading(false)
     }
     fetchData()
-  }, [])
+  }, [supabase])
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>
