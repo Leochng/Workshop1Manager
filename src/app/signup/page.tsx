@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { createClient } from '@/lib/supabase/client' // Import the client-side Supabase client
+import { VerifyEmailModal } from "@/components/ui/verify-email-modal"
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -16,6 +17,7 @@ export default function SignupPage() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
+  const [showVerifyModal, setShowVerifyModal] = useState(false)
 
   const supabase = createClient() // Initialize the Supabase client
 
@@ -52,6 +54,7 @@ export default function SignupPage() {
     }
 
     setMessage('Sign up successful! Please check your email to confirm your account.')
+    setShowVerifyModal(true)
     setEmail('')
     setPassword('')
     setFirstName('')
@@ -138,6 +141,7 @@ export default function SignupPage() {
           </CardFooter>
         </form>
       </Card>
+      <VerifyEmailModal open={showVerifyModal} email={email} onClose={() => setShowVerifyModal(false)} />
     </div>
   )
 } 
