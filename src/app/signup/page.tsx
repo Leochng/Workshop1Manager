@@ -6,8 +6,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { createClient } from '@/lib/supabase/client' // Import the client-side Supabase client
-import { VerifyEmailModal } from "@/components/ui/verify-email-modal"
+import { useRouter } from 'next/navigation'
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth'
+import { auth } from '../../lib/firebase'
+import { useAuth } from '../../lib/AuthContext'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -17,49 +19,27 @@ export default function SignupPage() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
-  const [showVerifyModal, setShowVerifyModal] = useState(false)
-
-  const supabase = createClient() // Initialize the Supabase client
+  const router = useRouter()
+  const { user } = useAuth()
 
   const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault() // Prevent default form submission
-    setError(null) // Clear previous errors
-    setMessage(null) // Clear previous messages
-
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      // Supabase will send a confirmation email by default.
-      // We can add options here later if needed, e.g., redirect URL after confirmation.
-    })
-
-    if (signUpError) {
-      console.error('Error signing up:', signUpError)
-      setError(signUpError.message)
-      return
+    event.preventDefault()
+    setError(null)
+    setMessage(null)
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      await updateProfile(userCredential.user, { displayName: `${firstName} ${lastName}` })
+      await sendEmailVerification(userCredential.user)
+      setMessage('Sign up successful! Please check your email to verify your account.')
+      setEmail('')
+      setPassword('')
+      setFirstName('')
+      setLastName('')
+      setPhone('')
+      router.replace('/verify-email')
+    } catch (error: any) {
+      setError(error.message)
     }
-
-    // If user is created, update profile data (row is created by trigger)
-    const userId = data.user?.id
-    if (userId) {
-      const { error: profileError } = await supabase.from('profiles').update({
-        first_name: firstName,
-        last_name: lastName,
-        phone: phone,
-      }).eq('id', userId)
-      if (profileError) {
-        setError('Sign up succeeded, but failed to save profile: ' + profileError.message)
-        return
-      }
-    }
-
-    setMessage('Sign up successful! Please check your email to confirm your account.')
-    setShowVerifyModal(true)
-    setEmail('')
-    setPassword('')
-    setFirstName('')
-    setLastName('')
-    setPhone('')
   }
 
   return (
@@ -141,7 +121,6 @@ export default function SignupPage() {
           </CardFooter>
         </form>
       </Card>
-      <VerifyEmailModal open={showVerifyModal} email={email} onClose={() => setShowVerifyModal(false)} />
     </div>
   )
 } 

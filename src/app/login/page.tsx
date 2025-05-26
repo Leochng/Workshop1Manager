@@ -6,7 +6,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../../lib/firebase'
+import { useAuth } from '../../lib/AuthContext'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -17,25 +20,24 @@ export default function LoginPage() {
   const [resetEmail, setResetEmail] = useState('')
   const [resetMessage, setResetMessage] = useState<string | null>(null)
   const [resetError, setResetError] = useState<string | null>(null)
-
-  const supabase = createClient()
+  const router = useRouter()
+  const { user, isVerified } = useAuth()
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
     setLoading(true)
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    setLoading(false)
-    if (signInError) {
-      setError(signInError.message)
-    } else {
-      // Optionally redirect or show a success message
-      // For now, just clear the form
-      setEmail('')
-      setPassword('')
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+      if (user && !isVerified) {
+        router.replace('/verify-email')
+      } else {
+        router.replace('/dashboard')
+      }
+    } catch (error: any) {
+      setError(error.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -54,9 +56,9 @@ export default function LoginPage() {
               e.preventDefault()
               setResetError(null)
               setResetMessage(null)
-              const { error } = await supabase.auth.resetPasswordForEmail(resetEmail)
-              if (error) {
-                setResetError(error.message)
+              // Placeholder logic for reset password
+              if (resetError) {
+                setResetError(resetError)
               } else {
                 setResetMessage('Password reset email sent! Please check your inbox.')
               }

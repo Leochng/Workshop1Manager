@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { createClient } from '@/lib/supabase/client'
+import { db } from '../../lib/firebase'
+import { collection, query, where, getDocs, addDoc } from 'firebase/firestore'
+import { ProtectedRoute } from '../../lib/ProtectedRoute'
 
 interface Vehicle {
   id: string;
@@ -34,32 +36,28 @@ export default function ServiceHistoryPage() {
   const [success, setSuccess] = useState<string | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
 
-  const supabase = createClient()
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
       setError(null)
       setSuccess(null)
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      if (userError || !user) {
-        setError('You must be signed in to view service history.')
-        setLoading(false)
-        return
+      // Fetch vehicles for the user
+      try {
+        if (!userId) {
+          setVehicles([])
+          setLoading(false)
+          return
+        }
+        const q = query(collection(db, 'vehicles'), where('user_id', '==', userId));
+        const querySnapshot = await getDocs(q);
+        setVehicles(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Vehicle));
+      } catch (err: any) {
+        setError(err.message)
       }
-      setUserId(user.id)
-      // Fetch vehicles
-      const { data: vehicleData, error: vehicleError } = await supabase.from('vehicles').select('id, name, license_plate').eq('user_id', user.id)
-      if (vehicleError) {
-        setError('Could not fetch vehicles: ' + vehicleError.message)
-        setLoading(false)
-        return
-      }
-      setVehicles(vehicleData ?? [])
       setLoading(false)
     }
     fetchData()
-  }, [supabase])
+  }, [userId])
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -69,17 +67,17 @@ export default function ServiceHistoryPage() {
       }
       setLoading(true)
       setError(null)
-      const { data: records, error: recordsError } = await supabase.from('service_records').select('*').eq('vehicle_id', selectedVehicleId).order('date', { ascending: false })
-      if (recordsError) {
-        setError('Could not fetch service records: ' + recordsError.message)
-        setLoading(false)
-        return
+      try {
+        const q = query(collection(db, 'service_records'), where('vehicle_id', '==', selectedVehicleId));
+        const querySnapshot = await getDocs(q);
+        setServiceRecords(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as ServiceRecord));
+      } catch (err: any) {
+        setError(err.message)
       }
-      setServiceRecords(records ?? [])
       setLoading(false)
     }
     fetchRecords()
-  }, [selectedVehicleId, supabase])
+  }, [selectedVehicleId])
 
   const handleAddRecord = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -93,25 +91,26 @@ export default function ServiceHistoryPage() {
       setError('Please fill in all required fields.')
       return
     }
-    const { error: insertError } = await supabase.from('service_records').insert([
-      {
+    try {
+      await addDoc(collection(db, 'service_records'), {
+        user_id: userId,
         vehicle_id: selectedVehicleId,
         date,
         description,
-        workshop: workshop || null,
-      },
-    ])
-    if (insertError) {
-      setError('Failed to add service record: ' + insertError.message)
-      return
+        workshop: workshop || undefined,
+        created_at: new Date().toISOString(),
+      })
+      setSuccess('Service record added!')
+      setDate('')
+      setDescription('')
+      setWorkshop('')
+      // Refresh records
+      const q = query(collection(db, 'service_records'), where('vehicle_id', '==', selectedVehicleId));
+      const querySnapshot = await getDocs(q);
+      setServiceRecords(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as ServiceRecord));
+    } catch (err: any) {
+      setError(err.message)
     }
-    setSuccess('Service record added!')
-    setDate('')
-    setDescription('')
-    setWorkshop('')
-    // Refresh records
-    const { data: records } = await supabase.from('service_records').select('*').eq('vehicle_id', selectedVehicleId).order('date', { ascending: false })
-    setServiceRecords(records ?? [])
   }
 
   if (loading) {
@@ -122,74 +121,76 @@ export default function ServiceHistoryPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-muted/40 p-4">
-      <Card className="w-full max-w-md mb-8">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Service History</CardTitle>
-          <CardDescription>Select a vehicle to view and add service records.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="vehicle">Select Vehicle</Label>
-            <select id="vehicle" className="w-full border rounded p-2" value={selectedVehicleId} onChange={e => setSelectedVehicleId(e.target.value)} required>
-              <option value="">-- Select --</option>
-              {vehicles.map(v => (
-                <option key={v.id} value={v.id}>{v.name} ({v.license_plate})</option>
-              ))}
-            </select>
-          </div>
-        </CardContent>
-      </Card>
-      {selectedVehicleId && (
+    <ProtectedRoute>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-muted/40 p-4">
         <Card className="w-full max-w-md mb-8">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Add Service Record</CardTitle>
+            <CardTitle className="text-2xl">Service History</CardTitle>
+            <CardDescription>Select a vehicle to view and add service records.</CardDescription>
           </CardHeader>
-          <form onSubmit={handleAddRecord}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="date">Service Date</Label>
-                <Input id="date" type="date" value={date} onChange={e => setDate(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Service Description</Label>
-                <Input id="description" type="text" value={description} onChange={e => setDescription(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="workshop">Workshop Name (optional)</Label>
-                <Input id="workshop" type="text" value={workshop} onChange={e => setWorkshop(e.target.value)} />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              {success && <p className="text-sm text-green-500">{success}</p>}
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full" type="submit">Add Record</Button>
-            </CardFooter>
-          </form>
-        </Card>
-      )}
-      {selectedVehicleId && (
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-xl">Service Records</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {serviceRecords.length === 0 ? (
-              <p className="text-center text-muted-foreground">No service records found.</p>
-            ) : (
-              <ul className="space-y-4">
-                {serviceRecords.map((rec) => (
-                  <li key={rec.id} className="border rounded p-3 flex flex-col gap-1">
-                    <span className="font-semibold">{rec.date}</span>
-                    <span className="text-sm">{rec.description}</span>
-                    {rec.workshop && <span className="text-sm text-muted-foreground">Workshop: {rec.workshop}</span>}
-                  </li>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="vehicle">Select Vehicle</Label>
+              <select id="vehicle" className="w-full border rounded p-2" value={selectedVehicleId} onChange={e => setSelectedVehicleId(e.target.value)} required>
+                <option value="">-- Select --</option>
+                {vehicles.map(v => (
+                  <option key={v.id} value={v.id}>{v.name} ({v.license_plate})</option>
                 ))}
-              </ul>
-            )}
+              </select>
+            </div>
           </CardContent>
         </Card>
-      )}
-    </div>
+        {selectedVehicleId && (
+          <Card className="w-full max-w-md mb-8">
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl">Add Service Record</CardTitle>
+            </CardHeader>
+            <form onSubmit={handleAddRecord}>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date">Service Date</Label>
+                  <Input id="date" type="date" value={date} onChange={e => setDate(e.target.value)} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Service Description</Label>
+                  <Input id="description" type="text" value={description} onChange={e => setDescription(e.target.value)} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="workshop">Workshop Name (optional)</Label>
+                  <Input id="workshop" type="text" value={workshop} onChange={e => setWorkshop(e.target.value)} />
+                </div>
+                {error && <p className="text-sm text-red-500">{error}</p>}
+                {success && <p className="text-sm text-green-500">{success}</p>}
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" type="submit">Add Record</Button>
+              </CardFooter>
+            </form>
+          </Card>
+        )}
+        {selectedVehicleId && (
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl">Service Records</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {serviceRecords.length === 0 ? (
+                <p className="text-center text-muted-foreground">No service records found.</p>
+              ) : (
+                <ul className="space-y-4">
+                  {serviceRecords.map((rec) => (
+                    <li key={rec.id} className="border rounded p-3 flex flex-col gap-1">
+                      <span className="font-semibold">{rec.date}</span>
+                      <span className="text-sm">{rec.description}</span>
+                      {rec.workshop && <span className="text-sm text-muted-foreground">Workshop: {rec.workshop}</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </ProtectedRoute>
   )
 } 

@@ -5,7 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { AuthProvider } from '../lib/AuthContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,13 +44,6 @@ export default function RootLayout({
     }
   }, [lang]);
 
-  // Logout handler
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
-
   // Nav links
   const navLinks = [
     { href: '/dashboard', label: lang === 'ms' ? 'Papan Pemuka' : 'Dashboard' },
@@ -63,88 +56,78 @@ export default function RootLayout({
   return (
     <html lang={lang}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased ${darkMode ? 'bg-gray-900 text-white' : ''}`}>
-        <nav className="w-full bg-white dark:bg-gray-900 border-b shadow-sm sticky top-0 z-50">
-          <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-2">
-            <a href="/dashboard" className="font-bold text-lg text-primary">Workshop1Manager</a>
-            <button
-              className="md:hidden p-2 focus:outline-none"
-              aria-label="Toggle navigation"
-              onClick={() => setNavOpen((open) => !open)}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <div className="hidden md:flex gap-4 text-sm items-center">
-              {navLinks.map(link => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className={`hover:text-primary ${pathname === link.href ? 'text-primary font-semibold underline' : ''}`}
-                >
-                  {link.label}
-                </a>
-              ))}
+        <AuthProvider>
+          <nav className="w-full bg-white dark:bg-gray-900 border-b shadow-sm sticky top-0 z-50">
+            <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-2">
+              <a href="/dashboard" className="font-bold text-lg text-primary">Workshop1Manager</a>
               <button
-                className="ml-2 px-2 py-1 rounded border text-xs hover:bg-muted"
-                onClick={() => setLang(lang === 'en' ? 'ms' : 'en')}
-                aria-label="Toggle language"
+                className="md:hidden p-2 focus:outline-none"
+                aria-label="Toggle navigation"
+                onClick={() => setNavOpen((open) => !open)}
               >
-                {lang === 'en' ? 'BM' : 'EN'}
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
               </button>
-              <button
-                className="ml-2 px-2 py-1 rounded border text-xs hover:bg-muted"
-                onClick={() => setDarkMode(d => !d)}
-                aria-label="Toggle dark mode"
-              >
-                {darkMode ? '☀️' : '🌙'}
-              </button>
-              <button
-                className="ml-2 px-2 py-1 rounded border text-xs hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-300"
-                onClick={handleLogout}
-              >
-                {lang === 'ms' ? 'Log Keluar' : 'Logout'}
-              </button>
-            </div>
-          </div>
-          {navOpen && (
-            <div className="md:hidden bg-white dark:bg-gray-900 border-t shadow-sm px-4 pb-4 flex flex-col gap-2">
-              {navLinks.map(link => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className={`hover:text-primary ${pathname === link.href ? 'text-primary font-semibold underline' : ''}`}
-                  onClick={() => setNavOpen(false)}
-                >
-                  {link.label}
-                </a>
-              ))}
-              <div className="flex gap-2 mt-2">
+              <div className="hidden md:flex gap-4 text-sm items-center">
+                {navLinks.map(link => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className={`hover:text-primary ${pathname === link.href ? 'text-primary font-semibold underline' : ''}`}
+                  >
+                    {link.label}
+                  </a>
+                ))}
                 <button
-                  className="px-2 py-1 rounded border text-xs hover:bg-muted"
+                  className="ml-2 px-2 py-1 rounded border text-xs hover:bg-muted"
                   onClick={() => setLang(lang === 'en' ? 'ms' : 'en')}
                   aria-label="Toggle language"
                 >
                   {lang === 'en' ? 'BM' : 'EN'}
                 </button>
                 <button
-                  className="px-2 py-1 rounded border text-xs hover:bg-muted"
+                  className="ml-2 px-2 py-1 rounded border text-xs hover:bg-muted"
                   onClick={() => setDarkMode(d => !d)}
                   aria-label="Toggle dark mode"
                 >
                   {darkMode ? '☀️' : '🌙'}
                 </button>
-                <button
-                  className="px-2 py-1 rounded border text-xs hover:bg-red-100 dark:hover:bg-red-900 text-red-600 dark:text-red-300"
-                  onClick={handleLogout}
-                >
-                  {lang === 'ms' ? 'Log Keluar' : 'Logout'}
-                </button>
               </div>
             </div>
-          )}
-        </nav>
-        {children}
+            {navOpen && (
+              <div className="md:hidden bg-white dark:bg-gray-900 border-t shadow-sm px-4 pb-4 flex flex-col gap-2">
+                {navLinks.map(link => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className={`hover:text-primary ${pathname === link.href ? 'text-primary font-semibold underline' : ''}`}
+                    onClick={() => setNavOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+                <div className="flex gap-2 mt-2">
+                  <button
+                    className="px-2 py-1 rounded border text-xs hover:bg-muted"
+                    onClick={() => setLang(lang === 'en' ? 'ms' : 'en')}
+                    aria-label="Toggle language"
+                  >
+                    {lang === 'en' ? 'BM' : 'EN'}
+                  </button>
+                  <button
+                    className="px-2 py-1 rounded border text-xs hover:bg-muted"
+                    onClick={() => setDarkMode(d => !d)}
+                    aria-label="Toggle dark mode"
+                  >
+                    {darkMode ? '☀️' : '🌙'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </nav>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
