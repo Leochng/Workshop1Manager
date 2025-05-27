@@ -1,36 +1,158 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Workshop1Manager
 
-## Getting Started
+A comprehensive workshop management system built with Next.js and Firebase, designed to help users manage their vehicles, service history, and appointments.
 
-First, run the development server:
+## Features
+
+- 🔐 **User Authentication**
+  - Secure signup and login
+  - Email verification system
+  - Password reset functionality
+
+- 🚗 **Vehicle Management**
+  - Add, edit, and remove vehicles
+  - Track vehicle details
+  - Maintain service records
+
+- 📅 **Appointment System**
+  - Book service appointments
+  - Multiple time slots available
+  - Various service types
+  - Appointment cancellation
+
+- 📋 **Service History**
+  - Track all service records
+  - Detailed service information
+  - Workshop details tracking
+
+- 🌐 **Multi-language Support**
+  - English
+  - Bahasa Malaysia
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- Node.js 18.0 or higher installed
+- Git for version control
+- Firebase project credentials
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/workshop1manager.git
+cd workshop1manager
+```
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+1. Set up environment variables:
+
+Create a `.env.local` file with the following:
+
+```ini
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# Application Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=Workshop1Manager
+
+# Feature Flags
+NEXT_PUBLIC_ENABLE_DARK_MODE=true
+NEXT_PUBLIC_ENABLE_MULTILANG=true
+```
+
+## Development
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Access the application at [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```plaintext
+src/
+├── app/                    # Next.js pages and routes
+│   ├── (auth)/            # Authentication related pages
+│   ├── dashboard/         # Protected dashboard routes
+│   ├── profile/           # User profile pages
+│   ├── vehicles/          # Vehicle management pages
+│   ├── appointments/      # Appointment management pages
+│   ├── service-history/   # Service history pages
+│   └── api/               # API routes
+├── components/            # React components
+│   ├── ui/               # Reusable UI components
+│   └── auth/             # Authentication components
+├── lib/                  # Utilities and configurations
+│   ├── firebase.ts      # Firebase setup and utilities
+│   ├── AuthContext.tsx  # Authentication context
+│   ├── ProtectedRoute.tsx # Route protection
+│   └── utils.ts         # Helper functions
+└── middleware.ts        # Next.js middleware
+```
 
-## Learn More
+## Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run test` - Run Jest tests with DOM environment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Coding Standards
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **TypeScript**
+   - Use TypeScript for all new files
+   - Maintain proper type definitions
+   - Avoid using `any` type
 
-## Deploy on Vercel
+2. **Components**
+   - Use functional components
+   - Implement proper prop typing
+   - Keep components focused and reusable
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **State Management**
+   - Use React hooks for state
+   - Implement context where needed
+   - Keep state close to where it's used
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Styling**
+   - Use Tailwind CSS classes
+   - Follow design system tokens
+   - Maintain dark mode compatibility
+
+5. **Security**
+   - Always use Protected Routes
+   - Validate user permissions
+   - Sanitize user inputs
+
+## Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Run tests and linting
+4. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support, please create an issue in the GitHub repository or contact [workshop1manager@support.com](mailto:workshop1manager@support.com)

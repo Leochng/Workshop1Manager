@@ -26,8 +26,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const sendVerificationEmail = async () => {
-    if (auth.currentUser && !auth.currentUser.emailVerified) {
-      await sendEmailVerification(auth.currentUser);
+    try {
+      if (auth.currentUser && !auth.currentUser.emailVerified) {
+        await sendEmailVerification(auth.currentUser);
+      }
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      throw error;
     }
   };
 

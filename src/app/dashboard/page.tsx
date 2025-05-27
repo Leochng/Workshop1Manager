@@ -5,10 +5,26 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import Link from 'next/link'
 import { ProtectedRoute } from '../../lib/ProtectedRoute'
 
-export default function DashboardPage() {
-  const [user, setUser] = useState<Record<string, any> | null>(null)
+export default function DashboardPage() {  interface DashboardUser {
+    id: string;
+    email: string;
+    user_metadata?: {
+      first_name?: string;
+      last_name?: string;
+    };
+  }
+
+  interface NextAppointment {
+    id: string;
+    date: string;
+    time_slot: string;
+    service_type: string;
+    vehicle_id: string;
+  }
+
+  const [user, setUser] = useState<DashboardUser | null>(null)
   const [vehiclesCount, setVehiclesCount] = useState(0)
-  const [nextAppointment, setNextAppointment] = useState<Record<string, any> | null>(null)
+  const [nextAppointment, setNextAppointment] = useState<NextAppointment | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
