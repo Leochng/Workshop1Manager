@@ -29,12 +29,10 @@ export default function RootLayout({
 
   // Dark mode effect
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
+  }, []);
 
   // Language effect
   useEffect(() => {
@@ -53,14 +51,14 @@ export default function RootLayout({
   ];
 
   return (
-    <html lang={lang}>
-      <body className={`${inter.variable} ${robotoMono.variable} antialiased ${darkMode ? 'bg-gray-900 text-white' : ''}`}>
+    <html lang={lang} className={`${inter.variable} ${robotoMono.variable} ${darkMode ? 'dark' : ''}`}>
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <AuthProvider>
-          <nav className="w-full bg-white dark:bg-gray-900 border-b shadow-sm sticky top-0 z-50">
+          <nav className="w-full bg-card border-border border-b shadow-sm sticky top-0 z-50">
             <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-2">
-              <a href="/dashboard" className="font-bold text-lg text-primary">Workshop1Manager</a>
+              <a href="/dashboard" className="font-bold text-lg text-accent">Workshop1Manager</a>
               <button
-                className="md:hidden p-2 focus:outline-none"
+                className="md:hidden p-2 hover:bg-accent/10 rounded-md focus:outline-none"
                 aria-label="Toggle navigation"
                 onClick={() => setNavOpen((open) => !open)}
               >
@@ -73,20 +71,20 @@ export default function RootLayout({
                   <a
                     key={link.href}
                     href={link.href}
-                    className={`hover:text-primary ${pathname === link.href ? 'text-primary font-semibold underline' : ''}`}
+                    className={`hover:text-accent transition-colors ${pathname === link.href ? 'text-accent font-semibold' : ''}`}
                   >
                     {link.label}
                   </a>
                 ))}
                 <button
-                  className="ml-2 px-2 py-1 rounded border text-xs hover:bg-muted"
+                  className="ml-2 px-2 py-1 rounded-md border border-border hover:bg-accent hover:text-accent-foreground text-xs transition-colors"
                   onClick={() => setLang(lang === 'en' ? 'ms' : 'en')}
                   aria-label="Toggle language"
                 >
                   {lang === 'en' ? 'BM' : 'EN'}
                 </button>
                 <button
-                  className="ml-2 px-2 py-1 rounded border text-xs hover:bg-muted"
+                  className="ml-2 px-2 py-1 rounded-md border border-border hover:bg-accent hover:text-accent-foreground text-xs transition-colors"
                   onClick={() => setDarkMode(d => !d)}
                   aria-label="Toggle dark mode"
                 >
@@ -95,12 +93,12 @@ export default function RootLayout({
               </div>
             </div>
             {navOpen && (
-              <div className="md:hidden bg-white dark:bg-gray-900 border-t shadow-sm px-4 pb-4 flex flex-col gap-2">
+              <div className="md:hidden bg-card border-t border-border px-4 pb-4 flex flex-col gap-2">
                 {navLinks.map(link => (
                   <a
                     key={link.href}
                     href={link.href}
-                    className={`hover:text-primary ${pathname === link.href ? 'text-primary font-semibold underline' : ''}`}
+                    className={`hover:text-accent transition-colors ${pathname === link.href ? 'text-accent font-semibold' : ''}`}
                     onClick={() => setNavOpen(false)}
                   >
                     {link.label}
@@ -108,14 +106,14 @@ export default function RootLayout({
                 ))}
                 <div className="flex gap-2 mt-2">
                   <button
-                    className="px-2 py-1 rounded border text-xs hover:bg-muted"
+                    className="px-2 py-1 rounded-md border border-border hover:bg-accent hover:text-accent-foreground text-xs transition-colors"
                     onClick={() => setLang(lang === 'en' ? 'ms' : 'en')}
                     aria-label="Toggle language"
                   >
                     {lang === 'en' ? 'BM' : 'EN'}
                   </button>
                   <button
-                    className="px-2 py-1 rounded border text-xs hover:bg-muted"
+                    className="px-2 py-1 rounded-md border border-border hover:bg-accent hover:text-accent-foreground text-xs transition-colors"
                     onClick={() => setDarkMode(d => !d)}
                     aria-label="Toggle dark mode"
                   >
@@ -125,7 +123,9 @@ export default function RootLayout({
               </div>
             )}
           </nav>
-          {children}
+          <main className="flex-1">
+            {children}
+          </main>
         </AuthProvider>
       </body>
     </html>

@@ -42,13 +42,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-muted/40">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Sign In</CardTitle>
-          <CardDescription>
-            Enter your email and password to access your account.
-          </CardDescription>
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
+          <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
         {showReset ? (
           <form
@@ -94,10 +92,11 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
                   required
+                  className="w-full"
                 />
               </div>
               <div className="space-y-2">
@@ -107,25 +106,26 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
                   required
+                  className="w-full"
                 />
-                <button
-                  type="button"
-                  className="text-xs text-blue-600 hover:underline mt-1 ml-auto block"
-                  onClick={() => setShowReset(true)}
-                >
-                  Forgot Password?
-                </button>
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
+              {error && (
+                <p className="text-destructive text-sm">{error}</p>
+              )}
             </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-              <Button className="w-full" type="submit" disabled={loading}>
-                {loading ? 'Signing In...' : 'Sign In'}
+            <CardFooter className="flex flex-col space-y-4">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
               </Button>
-              <p className="text-sm text-center text-muted-foreground">
-                Don&apos;t have an account?{' '}
-                <Link href="/signup" className="font-semibold underline">
+              <p className="text-sm text-muted-foreground text-center">
+                Don't have an account?{' '}
+                <Link href="/signup" className="text-accent hover:underline">
                   Sign up
                 </Link>
               </p>
@@ -135,4 +135,4 @@ export default function LoginPage() {
       </Card>
     </div>
   )
-} 
+}
