@@ -1,19 +1,18 @@
 'use client'
 
 // import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from 'next/navigation';
 import { AuthProvider } from '../lib/AuthContext';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const robotoMono = Roboto_Mono({
+  variable: "--font-roboto-mono",
   subsets: ["latin"],
 });
 
@@ -55,7 +54,7 @@ export default function RootLayout({
 
   return (
     <html lang={lang}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased ${darkMode ? 'bg-gray-900 text-white' : ''}`}>
+      <body className={`${inter.variable} ${robotoMono.variable} antialiased ${darkMode ? 'bg-gray-900 text-white' : ''}`}>
         <AuthProvider>
           <nav className="w-full bg-white dark:bg-gray-900 border-b shadow-sm sticky top-0 z-50">
             <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-2">
