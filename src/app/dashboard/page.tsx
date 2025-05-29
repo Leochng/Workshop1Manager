@@ -67,10 +67,10 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             <Link href="/vehicles">
-              <Card className="hover:bg-muted transition cursor-pointer group relative overflow-hidden">
+              <Card className="hover:bg-muted/50 transition-all duration-300 cursor-pointer group">
                 <CardHeader className="flex flex-row items-center gap-4">
-                  <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-                    <IconCar className="w-6 h-6 text-primary" />
+                  <div className="p-2 rounded-xl bg-[rgb(220,20,60,0.1)] group-hover:bg-[rgb(220,20,60,0.15)] transition-colors">
+                    <IconCar className="w-6 h-6 text-[#DC143C]" />
                   </div>
                   <div>
                     <CardTitle>{t('dashboard.vehicles.title')}</CardTitle>
@@ -83,10 +83,10 @@ export default function DashboardPage() {
               </Card>
             </Link>
             <Link href="/appointments">
-              <Card className="hover:bg-muted transition cursor-pointer group relative overflow-hidden">
+              <Card className="hover:bg-muted/50 transition-all duration-300 cursor-pointer group">
                 <CardHeader className="flex flex-row items-center gap-4">
-                  <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-                    <IconCalendar className="w-6 h-6 text-primary" />
+                  <div className="p-2 rounded-xl bg-[rgb(220,20,60,0.1)] group-hover:bg-[rgb(220,20,60,0.15)] transition-colors">
+                    <IconCalendar className="w-6 h-6 text-[#DC143C]" />
                   </div>
                   <div>
                     <CardTitle>{t('dashboard.appointments.title')}</CardTitle>
@@ -106,10 +106,10 @@ export default function DashboardPage() {
               </Card>
             </Link>
             <Link href="/service-history">
-              <Card className="hover:bg-muted transition cursor-pointer group relative overflow-hidden">
+              <Card className="hover:bg-muted/50 transition-all duration-300 cursor-pointer group">
                 <CardHeader className="flex flex-row items-center gap-4">
-                  <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-                    <IconHistory className="w-6 h-6 text-primary" />
+                  <div className="p-2 rounded-xl bg-[rgb(220,20,60,0.1)] group-hover:bg-[rgb(220,20,60,0.15)] transition-colors">
+                    <IconHistory className="w-6 h-6 text-[#DC143C]" />
                   </div>
                   <div>
                     <CardTitle>{t('dashboard.history.title')}</CardTitle>
@@ -119,10 +119,10 @@ export default function DashboardPage() {
               </Card>
             </Link>
             <Link href="/profile">
-              <Card className="hover:bg-muted transition cursor-pointer group relative overflow-hidden">
+              <Card className="hover:bg-muted/50 transition-all duration-300 cursor-pointer group">
                 <CardHeader className="flex flex-row items-center gap-4">
-                  <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors">
-                    <IconUserCircle className="w-6 h-6 text-primary" />
+                  <div className="p-2 rounded-xl bg-[rgb(220,20,60,0.1)] group-hover:bg-[rgb(220,20,60,0.15)] transition-colors">
+                    <IconUserCircle className="w-6 h-6 text-[#DC143C]" />
                   </div>
                   <div>
                     <CardTitle>{t('dashboard.profile.title')}</CardTitle>

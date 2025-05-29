@@ -4,24 +4,23 @@
 @import "tw-animate-css";
 
 @layer base {
-  :root {
-  --radius: 0.625rem;
+  :root {  --radius: 0.625rem;
   --background: #FFFFF0;
   --foreground: #0A0A23;
   --card: #FFFFFF;
   --card-foreground: #0A0A23;
   --popover: #FFFFFF;
   --popover-foreground: #0A0A23;
-  --primary: #FFFFF0;
-  --primary-foreground: #0A0A23;
+  --primary: #0A0A23;
+  --primary-foreground: #FFFFF0;
   --secondary: #0A0A23;
   --secondary-foreground: #FFFFF0;
   --muted: #F5F5F5;
   --muted-foreground: #64748b;
   --accent: #DC143C;
-  --accent-foreground: #FFFFF0;
+  --accent-foreground: #FFFFFF;
   --destructive: #DC143C;
-  --destructive-foreground: #FFFFF0;
+  --destructive-foreground: #FFFFFF;
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #cbd5e1;
