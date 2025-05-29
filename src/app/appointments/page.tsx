@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { db } from '../../lib/firebase'
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore'
 import { ProtectedRoute } from '../../lib/ProtectedRoute'
+import { useLanguage } from '@/lib/LanguageContext'
 
 const TIME_SLOTS = ['Morning', 'Noon', 'Afternoon']
 const SERVICE_TYPES = ['Basic', 'Brake', 'Engine', 'Tire', 'Battery', 'Other']
@@ -40,6 +41,7 @@ export default function AppointmentsPage() {
   const [success, setSuccess] = useState<string | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null)
+  const { t } = useLanguage()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,11 +76,11 @@ export default function AppointmentsPage() {
     setError(null)
     setSuccess(null)
     if (!userId) {
-      setError('You must be signed in to book an appointment.')
+      setError(t('appointment.error.auth'))
       return
     }
     if (!vehicleId || !date || !timeSlot || !serviceType) {
-      setError('Please fill in all fields.')
+      setError(t('appointment.error.required'))
       return
     }
     try {
@@ -90,7 +92,7 @@ export default function AppointmentsPage() {
         service_type: serviceType,
         created_at: new Date().toISOString(),
       })
-      setSuccess('Appointment booked!')
+      setSuccess(t('appointment.success.book'))
       setVehicleId('')
       setDate('')
       setTimeSlot('')
@@ -112,7 +114,7 @@ export default function AppointmentsPage() {
     if (!confirmCancelId) return
     try {
       await deleteDoc(doc(db, 'appointments', confirmCancelId))
-      setSuccess('Appointment cancelled!')
+      setSuccess(t('appointment.success.cancel'))
       setConfirmCancelId(null)
       // Refresh appointments
       const aq = query(collection(db, 'appointments'), where('user_id', '==', userId));
@@ -124,7 +126,7 @@ export default function AppointmentsPage() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+    return <div className="flex items-center justify-center min-h-screen">{t('loading')}</div>
   }
   if (error) {
     return <div className="flex items-center justify-center min-h-screen text-red-500">{error}</div>
@@ -135,39 +137,39 @@ export default function AppointmentsPage() {
       <div className="flex flex-col items-center justify-center min-h-screen bg-muted/40 p-4">
         <Card className="w-full max-w-md mb-8">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Book Appointment</CardTitle>
-            <CardDescription>Fill in the details to book a service appointment.</CardDescription>
+            <CardTitle className="text-2xl">{t('appointment.book')}</CardTitle>
+            <CardDescription>{t('appointment.details')}</CardDescription>
           </CardHeader>
           <form onSubmit={handleBook}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="vehicle">Select Vehicle</Label>
+                <Label htmlFor="vehicle">{t('appointment.selectVehicle')}</Label>
                 <select id="vehicle" className="w-full border rounded p-2" value={vehicleId} onChange={e => setVehicleId(e.target.value)} required>
-                  <option value="">-- Select --</option>
+                  <option value="">{t('appointment.select')}</option>
                   {vehicles.map(v => (
                     <option key={v.id} value={v.id}>{v.name} ({v.license_plate})</option>
                   ))}
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="date">Service Date</Label>
+                <Label htmlFor="date">{t('appointment.serviceDate')}</Label>
                 <Input id="date" type="date" value={date} onChange={e => setDate(e.target.value)} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="timeSlot">Time Slot</Label>
+                <Label htmlFor="timeSlot">{t('appointment.timeSlot')}</Label>
                 <select id="timeSlot" className="w-full border rounded p-2" value={timeSlot} onChange={e => setTimeSlot(e.target.value)} required>
-                  <option value="">-- Select --</option>
+                  <option value="">{t('appointment.select')}</option>
                   {TIME_SLOTS.map(slot => (
-                    <option key={slot} value={slot}>{slot}</option>
+                    <option key={slot} value={slot}>{t(`timeSlot.${slot.toLowerCase()}`)}</option>
                   ))}
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="serviceType">Service Type</Label>
+                <Label htmlFor="serviceType">{t('appointment.serviceType')}</Label>
                 <select id="serviceType" className="w-full border rounded p-2" value={serviceType} onChange={e => setServiceType(e.target.value)} required>
-                  <option value="">-- Select --</option>
+                  <option value="">{t('appointment.select')}</option>
                   {SERVICE_TYPES.map(type => (
-                    <option key={type} value={type}>{type}</option>
+                    <option key={type} value={type}>{t(`serviceType.${type.toLowerCase()}`)}</option>
                   ))}
                 </select>
               </div>
@@ -175,26 +177,26 @@ export default function AppointmentsPage() {
               {success && <p className="text-sm text-green-500">{success}</p>}
             </CardContent>
             <CardFooter>
-              <Button className="w-full" type="submit">Book Appointment</Button>
+              <Button className="w-full" type="submit">{t('appointment.book')}</Button>
             </CardFooter>
           </form>
         </Card>
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Upcoming Appointments</CardTitle>
+            <CardTitle className="text-xl">{t('appointment.upcoming')}</CardTitle>
           </CardHeader>
           <CardContent>
             {appointments.length === 0 ? (
-              <p className="text-center text-muted-foreground">No upcoming appointments.</p>
+              <p className="text-center text-muted-foreground">{t('appointment.noUpcoming')}</p>
             ) : (
               <ul className="space-y-4">
                 {appointments.map((appt) => (
                   <li key={appt.id} className="border rounded p-3 flex flex-col gap-1">
                     <span className="font-semibold">{appt.vehicle?.name} ({appt.vehicle?.license_plate})</span>
-                    <span className="text-sm">{appt.date} - {appt.time_slot}</span>
-                    <span className="text-sm text-muted-foreground">{appt.service_type} Service</span>
+                    <span className="text-sm">{appt.date} - {t(`timeSlot.${appt.time_slot.toLowerCase()}`)}</span>
+                    <span className="text-sm text-muted-foreground">{t(`serviceType.${appt.service_type.toLowerCase()}`)} {t('serviceType')}</span>
                     <div className="flex gap-2 mt-2">
-                      <Button size="sm" type="button" variant="destructive" onClick={() => handleCancel(appt.id)}>Cancel</Button>
+                      <Button size="sm" type="button" variant="destructive" onClick={() => handleCancel(appt.id)}>{t('appointment.cancel')}</Button>
                     </div>
                   </li>
                 ))}
@@ -202,11 +204,11 @@ export default function AppointmentsPage() {
             )}
             {confirmCancelId && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-                <div className="bg-white rounded shadow-lg p-6 max-w-sm w-full">
-                  <p className="mb-4">Are you sure you want to cancel this appointment?</p>
+                <div className="bg-white dark:bg-gray-800 rounded shadow-lg p-6 max-w-sm w-full">
+                  <p className="mb-4">{t('appointment.confirmCancel')}</p>
                   <div className="flex gap-4 justify-end">
-                    <Button variant="destructive" onClick={confirmCancelAppointment}>Yes, Cancel</Button>
-                    <Button variant="ghost" onClick={() => setConfirmCancelId(null)}>No</Button>
+                    <Button variant="destructive" onClick={confirmCancelAppointment}>{t('appointment.yesCancel')}</Button>
+                    <Button variant="ghost" onClick={() => setConfirmCancelId(null)}>{t('appointment.noKeep')}</Button>
                   </div>
                 </div>
               </div>
@@ -216,4 +218,4 @@ export default function AppointmentsPage() {
       </div>
     </ProtectedRoute>
   )
-} 
+}

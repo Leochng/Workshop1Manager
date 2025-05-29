@@ -1,27 +1,25 @@
-'use client'
+'use client';
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link"
-import { useRouter } from 'next/navigation'
+import { useState } from 'react';
+import Link from 'next/link';
+import { useLanguage } from '@/lib/LanguageContext';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useAuth } from '../../lib/AuthContext'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [showReset, setShowReset] = useState(false)
-  const [resetEmail, setResetEmail] = useState('')
-  const [resetMessage, setResetMessage] = useState<string | null>(null)
-  const [resetError, setResetError] = useState<string | null>(null)
   const router = useRouter()
   const { user, isVerified } = useAuth()
+  const { t } = useLanguage();
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -35,104 +33,78 @@ export default function LoginPage() {
         router.replace('/dashboard')
       }
     } catch (error: any) {
-      setError(error.message)
+      setError(t('error.login'))
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-          <CardDescription>Enter your credentials to access your account</CardDescription>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md mx-auto shadow-lg">
+        <CardHeader className="space-y-3 pb-6 md:pb-8">
+          <CardTitle className="text-2xl md:text-3xl font-bold text-center tracking-tight">
+            {t('title')}
+          </CardTitle>
+          <CardDescription className="text-base md:text-lg text-center text-muted-foreground/90">
+            {t('enterCredentials')}
+          </CardDescription>
         </CardHeader>
-        {showReset ? (
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault()
-              setResetError(null)
-              setResetMessage(null)
-              // Placeholder logic for reset password
-              if (resetError) {
-                setResetError(resetError)
-              } else {
-                setResetMessage('Password reset email sent! Please check your inbox.')
-              }
-            }}
-          >
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="resetEmail">Email</Label>
-                <Input
-                  id="resetEmail"
-                  type="email"
-                  placeholder="name@example.com"
-                  value={resetEmail}
-                  onChange={(e) => setResetEmail(e.target.value)}
-                  required
-                />
-              </div>
-              {resetError && <p className="text-sm text-red-500">{resetError}</p>}
-              {resetMessage && <p className="text-sm text-green-500">{resetMessage}</p>}
-            </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-              <Button className="w-full" type="submit">Send Reset Email</Button>
-              <Button variant="ghost" type="button" onClick={() => setShowReset(false)}>
-                Back to Login
-              </Button>
-            </CardFooter>
-          </form>
-        ) : (
-          <form onSubmit={handleLogin}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                  className="w-full"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  required
-                  className="w-full"
-                />
-              </div>
-              {error && (
-                <p className="text-destructive text-sm">{error}</p>
-              )}
-            </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading}
-              >
-                {loading ? 'Signing in...' : 'Sign In'}
-              </Button>
-              <p className="text-sm text-muted-foreground text-center">
-                Don't have an account?{' '}
-                <Link href="/signup" className="text-accent hover:underline">
-                  Sign up
-                </Link>
+        <form onSubmit={handleLogin} className="space-y-6">
+          <CardContent className="space-y-5">
+            <div className="space-y-2.5">
+              <Label htmlFor="email" className="text-sm md:text-base font-medium text-foreground/90">
+                {t('email')}
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t('enterEmail')}
+                required
+                className="w-full h-11 text-base transition-shadow focus:ring-2 focus:ring-accent/20"
+              />
+            </div>
+            <div className="space-y-2.5">
+              <Label htmlFor="password" className="text-sm md:text-base font-medium text-foreground/90">
+                {t('password')}
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('enterPassword')}
+                required
+                className="w-full h-11 text-base transition-shadow focus:ring-2 focus:ring-accent/20"
+              />
+            </div>
+            {error && (
+              <p className="text-sm md:text-base text-destructive font-medium text-center bg-destructive/10 p-3 rounded-md">
+                {error}
               </p>
-            </CardFooter>
-          </form>
-        )}
+            )}
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-5 pt-2">
+            <Button
+              type="submit"
+              className="w-full h-11 text-base font-semibold bg-accent hover:bg-accent/90 text-accent-foreground transition-all hover:scale-[1.02] active:scale-[0.98]"
+              disabled={loading}
+            >
+              {loading ? t('loading') : t('signIn')}
+            </Button>
+            <div className="space-y-4 text-center w-full">
+              <p className="text-sm md:text-base text-muted-foreground">{t('noAccount')}</p>              <Link 
+                href="/signup" 
+                className="inline-flex w-full h-11 items-center justify-center text-base font-semibold text-accent hover:text-accent bg-muted rounded-md no-underline"
+              >
+                {t('register')}
+              </Link>
+            </div>
+          </CardFooter>
+        </form>
       </Card>
     </div>
-  )
+  );
 }

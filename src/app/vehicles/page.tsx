@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { db } from '../../lib/firebase'
 import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import { ProtectedRoute } from '../../lib/ProtectedRoute'
+import { useLanguage } from '@/lib/LanguageContext'
 
 type Vehicle = {
   id: string;
@@ -29,6 +30,7 @@ export default function VehiclesPage() {
   const [editName, setEditName] = useState('')
   const [editLicensePlate, setEditLicensePlate] = useState('')
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
+  const { t } = useLanguage()
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -57,7 +59,7 @@ export default function VehiclesPage() {
     setError(null)
     setSuccess(null)
     if (!userId) {
-      setError('You must be signed in to add a vehicle.')
+      setError(t('vehicle.error.auth'))
       return
     }
     try {
@@ -67,7 +69,7 @@ export default function VehiclesPage() {
         license_plate: licensePlate,
         created_at: new Date().toISOString(),
       })
-      setSuccess('Vehicle added!')
+      setSuccess(t('vehicle.added'))
       setName('')
       setLicensePlate('')
       // Refresh vehicle list
@@ -93,7 +95,7 @@ export default function VehiclesPage() {
         name: editName,
         license_plate: editLicensePlate,
       })
-      setSuccess('Vehicle updated!')
+      setSuccess(t('vehicle.updated'))
       setEditingId(null)
       // Refresh vehicle list
       const q = query(collection(db, 'vehicles'), where('user_id', '==', userId));
@@ -114,7 +116,7 @@ export default function VehiclesPage() {
     if (!confirmRemoveId) return
     try {
       await deleteDoc(doc(db, 'vehicles', confirmRemoveId))
-      setSuccess('Vehicle removed!')
+      setSuccess(t('vehicle.removed'))
       setConfirmRemoveId(null)
       // Refresh vehicle list
       const q = query(collection(db, 'vehicles'), where('user_id', '==', userId));
@@ -126,7 +128,7 @@ export default function VehiclesPage() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+    return <div className="flex items-center justify-center min-h-screen">{t('loading')}</div>
   }
   if (error) {
     return <div className="flex items-center justify-center min-h-screen text-red-500">{error}</div>
@@ -137,34 +139,34 @@ export default function VehiclesPage() {
       <div className="flex flex-col items-center justify-center min-h-screen bg-muted/40 p-4">
         <Card className="w-full max-w-md mb-8">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Add Vehicle</CardTitle>
-            <CardDescription>Enter your vehicle details below.</CardDescription>
+            <CardTitle className="text-2xl">{t('vehicle.add')}</CardTitle>
+            <CardDescription>{t('vehicle.details')}</CardDescription>
           </CardHeader>
           <form onSubmit={handleAddVehicle}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Vehicle Name/Model</Label>
+                <Label htmlFor="name">{t('vehicle.nameModel')}</Label>
                 <Input id="name" type="text" value={name} onChange={e => setName(e.target.value)} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="licensePlate">License Plate</Label>
+                <Label htmlFor="licensePlate">{t('vehicle.licensePlate')}</Label>
                 <Input id="licensePlate" type="text" value={licensePlate} onChange={e => setLicensePlate(e.target.value)} required />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               {success && <p className="text-sm text-green-500">{success}</p>}
             </CardContent>
             <CardFooter>
-              <Button className="w-full" type="submit">Add Vehicle</Button>
+              <Button className="w-full" type="submit">{t('vehicle.add')}</Button>
             </CardFooter>
           </form>
         </Card>
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">My Vehicles</CardTitle>
+            <CardTitle className="text-xl">{t('vehicle.myVehicles')}</CardTitle>
           </CardHeader>
           <CardContent>
             {vehicles.length === 0 ? (
-              <p className="text-center text-muted-foreground">No vehicles found.</p>
+              <p className="text-center text-muted-foreground">{t('vehicle.noVehicles')}</p>
             ) : (
               <ul className="space-y-4">
                 {vehicles.map((vehicle) => (
@@ -184,8 +186,8 @@ export default function VehiclesPage() {
                           required
                         />
                         <div className="flex gap-2">
-                          <Button size="sm" type="button" onClick={() => handleSaveEdit(vehicle.id)}>Save</Button>
-                          <Button size="sm" type="button" variant="ghost" onClick={() => setEditingId(null)}>Cancel</Button>
+                          <Button size="sm" type="button" onClick={() => handleSaveEdit(vehicle.id)}>{t('vehicle.save')}</Button>
+                          <Button size="sm" type="button" variant="ghost" onClick={() => setEditingId(null)}>{t('vehicle.cancel')}</Button>
                         </div>
                       </>
                     ) : (
@@ -193,8 +195,8 @@ export default function VehiclesPage() {
                         <span className="font-semibold">{vehicle.name}</span>
                         <span className="text-sm text-muted-foreground">{vehicle.license_plate}</span>
                         <div className="flex gap-2 mt-2">
-                          <Button size="sm" type="button" onClick={() => handleEdit(vehicle)}>Edit</Button>
-                          <Button size="sm" type="button" variant="destructive" onClick={() => handleRemove(vehicle.id)}>Remove</Button>
+                          <Button size="sm" type="button" onClick={() => handleEdit(vehicle)}>{t('vehicle.edit')}</Button>
+                          <Button size="sm" type="button" variant="destructive" onClick={() => handleRemove(vehicle.id)}>{t('vehicle.remove')}</Button>
                         </div>
                       </>
                     )}
@@ -204,11 +206,11 @@ export default function VehiclesPage() {
             )}
             {confirmRemoveId && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-                <div className="bg-white rounded shadow-lg p-6 max-w-sm w-full">
-                  <p className="mb-4">Are you sure you want to remove this vehicle?</p>
+                <div className="bg-white dark:bg-gray-800 rounded shadow-lg p-6 max-w-sm w-full">
+                  <p className="mb-4">{t('vehicle.confirmRemove')}</p>
                   <div className="flex gap-4 justify-end">
-                    <Button variant="destructive" onClick={confirmRemoveVehicle}>Yes, Remove</Button>
-                    <Button variant="ghost" onClick={() => setConfirmRemoveId(null)}>Cancel</Button>
+                    <Button variant="destructive" onClick={confirmRemoveVehicle}>{t('vehicle.yes')}</Button>
+                    <Button variant="ghost" onClick={() => setConfirmRemoveId(null)}>{t('vehicle.no')}</Button>
                   </div>
                 </div>
               </div>
@@ -218,4 +220,4 @@ export default function VehiclesPage() {
       </div>
     </ProtectedRoute>
   )
-} 
+}

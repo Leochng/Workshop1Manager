@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
 import { useAuth } from '../../lib/AuthContext'
+import { useLanguage } from '@/lib/LanguageContext'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -21,6 +22,7 @@ export default function SignupPage() {
   const [phone, setPhone] = useState('')
   const router = useRouter()
   const { user } = useAuth()
+  const { t } = useLanguage()
 
   const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -30,7 +32,7 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       await updateProfile(userCredential.user, { displayName: `${firstName} ${lastName}` })
       await sendEmailVerification(userCredential.user)
-      setMessage('Sign up successful! Please check your email to verify your account.')
+      setMessage(t('signup.success'))
       setEmail('')
       setPassword('')
       setFirstName('')
@@ -38,7 +40,7 @@ export default function SignupPage() {
       setPhone('')
       router.replace('/verify-email')
     } catch (error: any) {
-      setError(error.message)
+      setError(t('error.register'))
     }
   }
 
@@ -46,62 +48,63 @@ export default function SignupPage() {
     <div className="flex items-center justify-center min-h-screen bg-muted/40">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create an Account</CardTitle>
+          <CardTitle className="text-2xl">{t('signup.title')}</CardTitle>
           <CardDescription>
-            Enter your email and password to get started.
+            {t('signup.description')}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSignUp}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input 
                 id="email" 
                 type="email" 
-                placeholder="name@example.com" 
+                placeholder={t('enterEmail')} 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Input 
                 id="password" 
                 type="password" 
+                placeholder={t('enterPassword')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
+              <Label htmlFor="firstName">{t('signup.firstName')}</Label>
               <Input 
                 id="firstName" 
                 type="text" 
-                placeholder="First Name" 
+                placeholder={t('signup.firstName')} 
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label htmlFor="lastName">{t('signup.lastName')}</Label>
               <Input 
                 id="lastName" 
                 type="text" 
-                placeholder="Last Name" 
+                placeholder={t('signup.lastName')} 
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone">{t('signup.phoneNumber')}</Label>
               <Input 
                 id="phone" 
                 type="tel" 
-                placeholder="e.g. 012-3456789" 
+                placeholder="012-3456789" 
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
@@ -111,11 +114,11 @@ export default function SignupPage() {
             {message && <p className="text-sm text-green-500">{message}</p>}
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
-            <Button className="w-full" type="submit">Sign Up</Button>
+            <Button className="w-full" type="submit">{t('signup.submit')}</Button>
             <p className="text-sm text-center text-muted-foreground">
-              Already have an account?{" "}
+              {t('signup.haveAccount')}{" "}
               <Link href="/login" className="font-semibold underline">
-                Log in
+                {t('signup.login')}
               </Link>
             </p>
           </CardFooter>
@@ -123,4 +126,4 @@ export default function SignupPage() {
       </Card>
     </div>
   )
-} 
+}
