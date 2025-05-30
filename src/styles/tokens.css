@@ -1,14 +1,29 @@
 :root {
-  /* Colors */
+  /* Layout */
   --radius: 0.625rem;
-  --background: #FFFFF0;
-  --foreground: #0A0A23;
-  --card: #FFFFFF;
-  --card-foreground: #0A0A23;
-  --popover: #FFFFFF;
-  --popover-foreground: #0A0A23;
-  --primary: #0A0A23;
-  --primary-foreground: #FFFFFF;
+  
+  /* Brand Colors */
+  --primary: #FFFFF0;
+  --secondary: #2A2E35;
+  --accent: #DC143C;
+  
+  /* Background System */
+  --background: #121212;
+  --card: #2A2E35;
+  --hover: #1E1E1E;
+  --border: #3C3C3C;
+  
+  /* Status Colors */
+  --success: #28A745;
+  --warning: #FFC107;
+  --error: #FF4C4C;
+  --info: #17A2B8;
+  
+  /* Semantic Mappings */
+  --foreground: var(--primary);
+  --card-foreground: var(--primary);
+  --popover: var(--card);
+  --popover-foreground: var(--primary);
   --secondary: #4A5568;
   --secondary-foreground: #FFFFFF;
   --muted: #F5F5F5;

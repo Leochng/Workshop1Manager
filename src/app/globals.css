@@ -1,172 +1,74 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
-@import "tw-animate-css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import custom styles */
+@import "../styles/tokens.css";
+@import "../styles/typography.css";
 
 @layer base {
-  :root {  --radius: 0.625rem;
-  --background: #FFFFF0;
-  --foreground: #0A0A23;
-  --card: #FFFFFF;
-  --card-foreground: #0A0A23;
-  --popover: #FFFFFF;
-  --popover-foreground: #0A0A23;
-  --primary: #0A0A23;
-  --primary-foreground: #FFFFF0;
-  --secondary: #0A0A23;
-  --secondary-foreground: #FFFFF0;
-  --muted: #F5F5F5;
-  --muted-foreground: #64748b;
-  --accent: #DC143C;
-  --accent-foreground: #FFFFFF;
-  --destructive: #DC143C;
-  --destructive-foreground: #FFFFFF;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #cbd5e1;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  :root {
+    --background: #FFFFFF;
+    --foreground: #0A0A23;
+    --card: #FFFFFF;
+    --card-foreground: #0A0A23;
+    --popover: #FFFFFF;
+    --popover-foreground: #0A0A23;
+    --primary: #0A0A23;
+    --primary-foreground: #FFFFF0;
+    --secondary: #0A0A23;
+    --secondary-foreground: #FFFFF0;
+    --muted: #F5F5F5;
+    --muted-foreground: #64748b;
+    --accent: #DC143C;
+    --accent-foreground: #FFFFFF;
+    --destructive: #DC143C;
+    --destructive-foreground: #FFFFFF;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #cbd5e1;
+    --radius: 0.5rem;
   }
 
   .dark {
-  --background: #0A0A23;
-  --foreground: #FFFFF0;
-  --card: #1a1a2e;
-  --card-foreground: #FFFFF0;
-  --popover: #1a1a2e;
-  --popover-foreground: #FFFFF0;
-  --primary: #0A0A23;
-  --primary-foreground: #FFFFF0;
-  --secondary: #FFFFF0;
-  --secondary-foreground: #0A0A23;
-  --muted: #22223b;
-  --muted-foreground: #a1a1a1;
-  --accent: #DC143C;
-  --accent-foreground: #FFFFF0;
-  --destructive: #DC143C;
-  --destructive-foreground: #FFFFF0;
-  --border: #333340;
-  --input: #333340;
-  --ring: #44475a;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  }
-}
-
-@layer utilities {
-  /* Page Transitions */
-  .page-enter {
-    opacity: 0;
-    transform: translate3d(0, 20px, 0);
-  }
-  
-  .page-enter-active {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-    transition: opacity 400ms ease-in, transform 400ms ease-in;
+    --background: #0A0A23;
+    --foreground: #FFFFF0;
+    --card: #1a1a2e;
+    --card-foreground: #FFFFF0;
+    --popover: #1a1a2e;
+    --popover-foreground: #FFFFF0;
+    --primary: #0A0A23;
+    --primary-foreground: #FFFFF0;
+    --secondary: #FFFFF0;
+    --secondary-foreground: #0A0A23;
+    --muted: #22223b;
+    --muted-foreground: #a1a1a1;
+    --accent: #DC143C;
+    --accent-foreground: #FFFFF0;
+    --destructive: #DC143C;
+    --destructive-foreground: #FFFFF0;
+    --border: #333340;
+    --input: #333340;
+    --ring: #44475a;
   }
 
-  /* Dropdown Animation */
-  .dropdown-enter {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  .dropdown-enter-active {
-    opacity: 1;
-    transform: scale(1);
-    transition: opacity 200ms ease-out, transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Card Hover Effects */
-  .card-hover {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-  }
-
-  /* Button Animations */
-  .button-hover {
-    @apply transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
-  }
-
-  /* Form Input Focus */
-  .input-focus {
-    @apply transition-all duration-200 focus:ring-2 focus:ring-accent/20;
-  }
-
-  /* Navigation Link */
-  .nav-link {
-    @apply relative transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-accent after:transition-all hover:after:w-full;
-  }
-
-  /* Menu Animation */
-  .menu-slide {
-    @apply transition-all duration-300 ease-in-out;
-  }
-
-  /* Fade Animation */
-  .fade-in {
-    @apply animate-[fadeIn_400ms_ease-in];
-  }
-
-  .fade-out {
-    @apply animate-[fadeOut_300ms_ease-out];
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
-  }
-}
-
-/* Base styles for common elements */
-@layer base {
   body {
     background-color: var(--background);
     color: var(--foreground);
-    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
     color: var(--foreground);
+    font-weight: 500;
+    line-height: 1;
   }
 
   a {
     color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s;
   }
 
   a:hover {
@@ -175,17 +77,91 @@
 
   input, select, textarea {
     background-color: var(--background);
-    border-color: var(--border);
+    border: 1px solid var(--input);
     color: var(--foreground);
+    border-radius: var(--radius);
+    padding: 0.5rem;
   }
 
   button {
     background-color: var(--primary);
     color: var(--primary-foreground);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    border: none;
+    transition: all 0.2s;
   }
 
   button:hover {
     background-color: var(--accent);
     color: var(--accent-foreground);
+  }
+}
+
+@layer components {
+  .card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .page-transition {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+  }
+
+  .page-transition.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .dropdown-transition {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.2s;
+  }
+
+  .dropdown-transition.active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .menu-transition {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .menu-transition.active {
+    transform: translateX(0);
+  }
+}
+
+@layer utilities {
+  .fade {
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .fade-enter {
+    opacity: 0;
+  }
+
+  .fade-enter-active {
+    opacity: 1;
+  }
+
+  .fade-exit {
+    opacity: 1;
+  }
+
+  .fade-exit-active {
+    opacity: 0;
   }
 }

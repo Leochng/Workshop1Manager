@@ -8,7 +8,20 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
+      fontFamily: {
+        sans: ['var(--font-sans)'],
+        secondary: ['var(--font-secondary)'],
+        mono: ['var(--font-mono)'],
+      },
+      fontSize: {
+        'xs': 'var(--font-size-xs)',     /* 12px */
+        'sm': 'var(--font-size-sm)',     /* 14px */
+        'base': 'var(--font-size-base)', /* 16px */
+        'lg': 'var(--font-size-lg)',     /* 20px */
+        'xl': 'var(--font-size-xl)',     /* 24px */
+        '2xl': 'var(--font-size-2xl)',   /* 32px */
+        '3xl': 'var(--font-size-3xl)',   /* 40px */
+      },      colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: {

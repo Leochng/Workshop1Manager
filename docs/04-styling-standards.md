@@ -6,9 +6,11 @@
 
 ```css
 /* From globals.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "../styles/tokens.css";
+@import "../styles/typography.css";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
   * {
